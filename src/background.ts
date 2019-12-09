@@ -9,9 +9,11 @@ class ScrolImage {
         imgName: string,
         private velocity: number,
         private top: number,
-        private height:number
+        private height:number,
+        private width:number,
+        private interval:number,
     ){
-        this.x = 0
+        this.x = this.velocity
         loadImage(imgName).then(val => {
             this.image = val
         })
@@ -19,12 +21,14 @@ class ScrolImage {
 
     public update() {
         this.x += this.velocity
-        if( this.x < -gameSetting.canvasWidth) this.x=-1
+        if( this.x < -this.width) this.x=this.velocity
     }
 
     public draw(ctx: CanvasRenderingContext2D) {
-        ctx.drawImage(this.image,this.x, this.top, gameSetting.canvasWidth, this.height)
-        ctx.drawImage(this.image,this.x+gameSetting.canvasWidth, this.top, gameSetting.canvasWidth, this.height)
+        const numberOfImg = Math.floor(gameSetting.canvasWidth/this.interval) + 2
+        for(let i=0; i<numberOfImg;i++){
+            ctx.drawImage(this.image, this.x+this.interval*i, this.top, this.width, this.height)
+        }
     }
 
 }
@@ -34,7 +38,8 @@ export default class BackGround {
 
     constructor() {
         const top = gameSetting.canvasHeight-100
-        this.ground = new ScrolImage('gra_ground_grassA', -10, top, 100)
+        const width = gameSetting.canvasWidth
+        this.ground = new ScrolImage('gra_ground_grassA', -10, top, 100, width, width)
     }
 
     public update() {
